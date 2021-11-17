@@ -4,7 +4,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import mongodb.Connection;
+import mongodb.tree_node.CollectionNode;
+import mongodb.tree_node.DBNode;
+import mongodb.tree_node.TreeNode;
 
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -30,8 +34,8 @@ public class MainGUIController implements Initializable {
     private TextArea taOutput;
 
     @FXML
-    private TreeView<String> mongoTreeView;
-    private TreeItem<String> mongoTreeRoot;
+    private TreeView<TreeNode> mongoTreeView;
+    private TreeItem<TreeNode> mongoTreeRoot;
 
     @FXML
     private void onExitButtonPressed(ActionEvent event) {
@@ -56,15 +60,18 @@ public class MainGUIController implements Initializable {
         }
 
         for (String dbName : Connection.getInstance().getMongoClient().getDatabaseNames()) {
-            mongoTreeRoot.getChildren().add(new TreeItem<>(dbName));
+            mongoTreeRoot.getChildren().add(new TreeItem<>(new DBNode(dbName, mongoTreeRoot)));
         }
 
-        for (TreeItem<String> dbTreeItem : mongoTreeRoot.getChildren()) {
+        for (TreeItem<TreeNode> dbTreeItem : mongoTreeRoot.getChildren()) {
             for (
-                    String dbCollectionName
-                    : Connection.getInstance().getMongoClient().getDB(dbTreeItem.getValue()).getCollectionNames()
+                    String dbCollectionName :
+                    Connection.getInstance()
+                            .getMongoClient()
+                            .getDB(dbTreeItem.getValue().getName())
+                            .getCollectionNames()
             ) {
-                dbTreeItem.getChildren().add(new TreeItem<>(dbCollectionName));
+                dbTreeItem.getChildren().add(new TreeItem<>(new CollectionNode(dbCollectionName, dbTreeItem)));
             }
         }
     }
@@ -75,13 +82,22 @@ public class MainGUIController implements Initializable {
     }
 
     @FXML
-    private void onMongoTreeViewClicked() {
+    private void onMongoTreeViewClicked(MouseEvent event) {
+        TreeItem<TreeNode> selectedItem = mongoTreeView.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            return;
+        }
+
+        if (event.getClickCount() < 2) {
+            return;
+        }
+
 
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        mongoTreeRoot = new TreeItem<>("ROOT");
+        mongoTreeRoot = new TreeItem<>(null);
         mongoTreeView.setRoot(mongoTreeRoot);
     }
 }
