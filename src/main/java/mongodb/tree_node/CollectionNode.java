@@ -1,5 +1,6 @@
 package mongodb.tree_node;
 
+import gui.MainGUIController;
 import javafx.scene.control.TreeItem;
 
 public class CollectionNode extends TreeNode {
@@ -8,7 +9,8 @@ public class CollectionNode extends TreeNode {
     }
 
     @Override
-    public void onSelected() {
-        super.onSelected();
+    public void onSelected(MainGUIController mainGUIController) {
+        mainGUIController.databaseViewController.onDisable();
+        mainGUIController.collectionViewController.onEnable();
     }
 }

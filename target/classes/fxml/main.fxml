@@ -3,9 +3,9 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -45,7 +45,10 @@
                   <TextField fx:id="tfInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER" />
                </bottom>
                <center>
-                  <TextArea fx:id="taOutput" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER" />
+                  <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+                      <fx:include fx:id="collectionView" source="/fxml/collection_view.fxml" />
+                      <fx:include fx:id="databaseView" source="/fxml/database_view.fxml" />
+                  </AnchorPane>
                </center>
             </BorderPane>
          </children>

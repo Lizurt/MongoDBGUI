@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import mongodb.Connection;
 import mongodb.tree_node.CollectionNode;
 import mongodb.tree_node.DBNode;
@@ -36,6 +37,13 @@ public class MainGUIController implements Initializable {
     @FXML
     private TreeView<TreeNode> mongoTreeView;
     private TreeItem<TreeNode> mongoTreeRoot;
+
+    // todo: make these fiels private. At the moment I'm not sure if there is no a better approach
+    @FXML
+    public CollectionViewController collectionViewController;
+    @FXML
+    public DatabaseViewController databaseViewController;
+
 
     @FXML
     private void onExitButtonPressed(ActionEvent event) {
@@ -92,12 +100,16 @@ public class MainGUIController implements Initializable {
             return;
         }
 
-
+        selectedItem.getValue().onSelected(this);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         mongoTreeRoot = new TreeItem<>(null);
         mongoTreeView.setRoot(mongoTreeRoot);
+        // I'm just too lazy to switch visibility in SceneBuilder each time I want to edit those fxmls,
+        // so they're visible by default, but shouldn't. Let's fix it (a bit crutchy but effective!)
+        databaseViewController.onDisable();
+        collectionViewController.onDisable();
     }
 }

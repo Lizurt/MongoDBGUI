@@ -1,5 +1,6 @@
 package mongodb.tree_node;
 
+import gui.MainGUIController;
 import javafx.scene.control.TreeItem;
 
 public abstract class TreeNode {
@@ -11,9 +12,7 @@ public abstract class TreeNode {
         setContainer(container);
     }
 
-    public void onSelected() {
-
-    }
+    public abstract void onSelected(MainGUIController mainGUIController);
 
     @Override
     public String toString() {
