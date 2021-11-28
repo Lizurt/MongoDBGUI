@@ -1,15 +1,15 @@
 package mongodb;
 
-import com.mongodb.*;
-
-import java.net.UnknownHostException;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 
 public class Connection {
     private static class ConnectionInstanceHolder {
         private static final Connection INSTANCE = new Connection();
     }
 
-    private Connection() {}
+    private Connection() {
+    }
 
     public static Connection getInstance() {
         return ConnectionInstanceHolder.INSTANCE;
@@ -21,24 +21,21 @@ public class Connection {
 
     private MongoClient mongoClient;
 
-    public void connect(String fullIp) throws UnknownHostException {
+    public void connect(String fullIp) {
         if (mongoClient != null) {
             System.out.println("Already connected.");
             return;
         }
         System.out.println("Connected successfully.");
-        mongoClient = new MongoClient(new MongoClientURI(fullIp));
+        mongoClient = MongoClients.create(fullIp);
     }
 
-    public String testCmd() {
-        StringBuilder result = new StringBuilder();
-        DB db = mongoClient.getDB("amogus");
-        DBCollection dbCollection = db.getCollection("users");
-        DBCursor dbCursor = dbCollection.find();
-        for (DBObject dbObject : dbCursor) {
-            result.append(dbObject).append("\n");
+    public void disconnect() {
+        if (mongoClient == null) {
+            return;
         }
-        return result.toString();
+
+        mongoClient.close();
     }
 
     public MongoClient getMongoClient() {

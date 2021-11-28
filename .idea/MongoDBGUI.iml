@@ -19,6 +19,8 @@
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:win:13" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:13" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:win:13" level="project" />
-    <orderEntry type="library" name="Maven: org.mongodb:mongo-java-driver:2.13.3" level="project" />
+    <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-sync:3.12.10" level="project" />
+    <orderEntry type="library" name="Maven: org.mongodb:bson:3.12.10" level="project" />
+    <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-core:3.12.10" level="project" />
   </component>
 </module>

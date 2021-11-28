@@ -5,14 +5,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
 import mongodb.Connection;
 import mongodb.tree_node.CollectionNode;
 import mongodb.tree_node.DBNode;
 import mongodb.tree_node.TreeNode;
 
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 
 public class MainGUIController implements Initializable {
@@ -21,9 +19,6 @@ public class MainGUIController implements Initializable {
 
     @FXML
     private URL location;
-
-    @FXML
-    private MenuItem miExec;
 
     @FXML
     private MenuItem miConnect;
@@ -38,7 +33,7 @@ public class MainGUIController implements Initializable {
     private TreeView<TreeNode> mongoTreeView;
     private TreeItem<TreeNode> mongoTreeRoot;
 
-    // todo: make these fiels private. At the moment I'm not sure if there is no a better approach
+    // todo: make these fields private. At the moment I'm not sure if there is no a better approach
     @FXML
     public CollectionViewController collectionViewController;
     @FXML
@@ -51,23 +46,14 @@ public class MainGUIController implements Initializable {
     }
 
     @FXML
-    private void onExecButtonPressed(ActionEvent event) {
-        taOutput.setText(Connection.getInstance().testCmd());
-    }
-
-    @FXML
     private void onConnectButtonPressed(ActionEvent event) {
-        try {
-            Connection.getInstance().connect("mongodb://127.0.0.1:27017");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        Connection.getInstance().connect("mongodb://127.0.0.1:27017");
 
         if (!Connection.getInstance().readyToWork()) {
             return;
         }
 
-        for (String dbName : Connection.getInstance().getMongoClient().getDatabaseNames()) {
+        for (String dbName : Connection.getInstance().getMongoClient().listDatabaseNames()) {
             mongoTreeRoot.getChildren().add(new TreeItem<>(new DBNode(dbName, mongoTreeRoot)));
         }
 
@@ -76,8 +62,8 @@ public class MainGUIController implements Initializable {
                     String dbCollectionName :
                     Connection.getInstance()
                             .getMongoClient()
-                            .getDB(dbTreeItem.getValue().getName())
-                            .getCollectionNames()
+                            .getDatabase(dbTreeItem.getValue().getName())
+                            .listCollectionNames()
             ) {
                 dbTreeItem.getChildren().add(new TreeItem<>(new CollectionNode(dbCollectionName, dbTreeItem)));
             }

@@ -11,6 +11,6 @@ public class CollectionNode extends TreeNode {
     @Override
     public void onSelected(MainGUIController mainGUIController) {
         mainGUIController.databaseViewController.onDisable();
-        mainGUIController.collectionViewController.onEnable();
+        mainGUIController.collectionViewController.onEnable(this);
     }
 }
