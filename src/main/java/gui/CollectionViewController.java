@@ -1,14 +1,19 @@
 package gui;
 
+import com.mongodb.client.MongoCollection;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
+import mongodb.Connection;
+import mongodb.Util;
 import mongodb.tree_node.CollectionNode;
 import mongodb.tree_node.TreeNode;
+import org.bson.Document;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class CollectionViewController implements Initializable {
@@ -21,24 +26,33 @@ public class CollectionViewController implements Initializable {
 
     public void onEnable(CollectionNode collectionNode) {
         collectionView.setVisible(true);
-/* todo
-        DBCollection dbCollection =
+
+        // clear the tree from old values, if any
+        collectionTreeRoot.getChildren().clear();
+
+        // and then add new items
+        MongoCollection<Document> dbCollection =
                 Connection
                         .getInstance()
                         .getMongoClient()
-                        .getDB(collectionNode.getContainer().getValue().getName())
+                        .getDatabase(collectionNode.getContainer().getValue().getName())
                         .getCollection(collectionNode.getName());
-        Map.Entry<String, String> dbCell;
-        for (DBObject dbRow : dbCollection.find()) {
-
-            collectionTreeRoot.getChildren().add(new TreeItem<>());
-            for (Object dbCellO : dbRow.toMap().entrySet()) {
-                // no generics in bsonobject????? how is this possible in 2021? Have to use this stoopid cast sadly.
-                // IJIDEA blaming me with its yellow color so much...
-                dbCell = (Map.Entry<String, String>) dbCellO;
-                System.out.println();
+        TreeItem<TreeNode> lastTreeItem;
+        for (Document dbRow : dbCollection.find()) {
+            collectionTreeRoot.getChildren().add(
+                    new TreeItem<>(
+                            new CollectionNode(dbRow.getObjectId(Util.MONGO_ID_KEY).toString(), collectionTreeRoot)
+                    )
+            );
+            for (Map.Entry<String, Object> dbCell : dbRow.entrySet()) {
+                lastTreeItem = collectionTreeRoot.getChildren().get(collectionTreeRoot.getChildren().size() - 1);
+                lastTreeItem.getChildren().add(
+                        new TreeItem<>(
+                                new CollectionNode(dbCell.getKey() + ": " + dbCell.getValue(), lastTreeItem)
+                        )
+                );
             }
-        }*/
+        }
     }
 
     public void onDisable() {
