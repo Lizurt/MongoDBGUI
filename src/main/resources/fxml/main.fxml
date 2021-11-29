@@ -1,55 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.MainGUIController">
-    <children>
-        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-            <children>
-                <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
-                    <top>
-                        <MenuBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                                 BorderPane.alignment="CENTER">
-                            <menus>
-                                <Menu mnemonicParsing="false" text="File">
-                                    <items>
-                                        <MenuItem fx:id="miConnect" mnemonicParsing="false"
-                                                  onAction="#onConnectButtonPressed" text="Connect"/>
-                                        <MenuItem mnemonicParsing="false" onAction="#onExitButtonPressed" text="Close"/>
-                                    </items>
-                                </Menu>
-                                <Menu mnemonicParsing="false" text="Edit">
-                                    <items>
-                                        <MenuItem mnemonicParsing="false" text="Delete"/>
-                                    </items>
-                                </Menu>
-                                <Menu mnemonicParsing="false" text="Help">
-                                    <items>
-                                        <MenuItem mnemonicParsing="false" text="About"/>
-                                    </items>
-                                </Menu>
-                            </menus>
-                        </MenuBar>
-                    </top>
-                    <left>
-                        <TreeView fx:id="mongoTreeView" maxHeight="1.7976931348623157E308"
-                                  maxWidth="1.7976931348623157E308" onMouseClicked="#onMongoTreeViewClicked"
-                                  showRoot="false" BorderPane.alignment="CENTER"/>
-                    </left>
-                    <bottom>
-                        <TextField fx:id="tfInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                                   BorderPane.alignment="CENTER"/>
-                    </bottom>
-                    <center>
-                        <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                                    prefHeight="400.0" prefWidth="600.0" BorderPane.alignment="CENTER">
-                            <fx:include fx:id="collectionView" source="/fxml/collection_view.fxml"/>
-                            <fx:include fx:id="databaseView" source="/fxml/database_view.fxml"/>
-                        </AnchorPane>
-                    </center>
-                </BorderPane>
-            </children>
-        </HBox>
-    </children>
-</VBox>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+
+<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.MainGUIController">
+   <children>
+          <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <top>
+                  <MenuBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+                      <menus>
+                          <Menu mnemonicParsing="false" text="File">
+                              <items>
+                                  <MenuItem fx:id="miConnect" mnemonicParsing="false" onAction="#onConnectButtonPressed" text="Connect" />
+                                  <MenuItem mnemonicParsing="false" onAction="#onExitButtonPressed" text="Close" />
+                              </items>
+                          </Menu>
+                          <Menu mnemonicParsing="false" text="Edit">
+                              <items>
+                                  <MenuItem mnemonicParsing="false" text="Delete" />
+                              </items>
+                          </Menu>
+                          <Menu mnemonicParsing="false" text="Help">
+                              <items>
+                                  <MenuItem mnemonicParsing="false" text="About" />
+                              </items>
+                          </Menu>
+                      </menus>
+                  </MenuBar>
+              </top>
+              <left>
+                  <TreeView fx:id="mongoTreeView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseClicked="#onMongoTreeViewClicked" showRoot="false" BorderPane.alignment="CENTER" />
+              </left>
+              <bottom>
+                  <TextField fx:id="tfInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER" />
+              </bottom>
+              <center>
+                  <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+                      <fx:include fx:id="collectionView" source="/fxml/collection_view.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                      <fx:include fx:id="databaseView" source="/fxml/database_view.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  </AnchorPane>
+              </center>
+          </BorderPane>
+   </children>
+</AnchorPane>

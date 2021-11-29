@@ -1,11 +1,11 @@
 package gui.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.AnchorPane;
 
 public class DatabaseViewController {
     @FXML
-    private VBox databaseView;
+    private AnchorPane databaseView;
 
     public void onEnable() {
         databaseView.setVisible(true);

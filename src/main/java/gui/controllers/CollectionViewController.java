@@ -8,7 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.AnchorPane;
 import mongodb.Connection;
 import mongodb.Util;
 import gui.tree_node.CollectionNode;
@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 
 public class CollectionViewController implements Initializable {
     @FXML
-    private VBox collectionView;
+    private AnchorPane collectionView;
 
     @FXML
     private TreeTableView<TreeNode> collectionTreeTableView;
