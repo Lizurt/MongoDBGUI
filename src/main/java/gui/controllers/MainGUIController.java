@@ -1,4 +1,4 @@
-package gui;
+package gui.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -6,9 +6,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import mongodb.Connection;
-import mongodb.tree_node.CollectionNode;
-import mongodb.tree_node.DBNode;
-import mongodb.tree_node.TreeNode;
+import gui.tree_node.CollectionNode;
+import gui.tree_node.DBNode;
+import gui.tree_node.SimpleTreeNode;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -30,8 +30,8 @@ public class MainGUIController implements Initializable {
     private TextArea taOutput;
 
     @FXML
-    private TreeView<TreeNode> mongoTreeView;
-    private TreeItem<TreeNode> mongoTreeRoot;
+    private TreeView<SimpleTreeNode> mongoTreeView;
+    private TreeItem<SimpleTreeNode> mongoTreeRoot;
 
     // todo: make these fields private. At the moment I'm not sure if there is no a better approach
     @FXML
@@ -57,7 +57,7 @@ public class MainGUIController implements Initializable {
             mongoTreeRoot.getChildren().add(new TreeItem<>(new DBNode(dbName, mongoTreeRoot)));
         }
 
-        for (TreeItem<TreeNode> dbTreeItem : mongoTreeRoot.getChildren()) {
+        for (TreeItem<SimpleTreeNode> dbTreeItem : mongoTreeRoot.getChildren()) {
             for (
                     String dbCollectionName :
                     Connection.getInstance()
@@ -77,7 +77,7 @@ public class MainGUIController implements Initializable {
 
     @FXML
     private void onMongoTreeViewClicked(MouseEvent event) {
-        TreeItem<TreeNode> selectedItem = mongoTreeView.getSelectionModel().getSelectedItem();
+        TreeItem<SimpleTreeNode> selectedItem = mongoTreeView.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
             return;
         }

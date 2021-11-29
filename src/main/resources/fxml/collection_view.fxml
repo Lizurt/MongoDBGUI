@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="collectionView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.CollectionViewController">
+<VBox fx:id="collectionView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.CollectionViewController">
     <children>
-        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
             <children>
-                <TreeView fx:id="collectionTreeView" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="600.0" showRoot="false" />
+            <TreeTableView fx:id="collectionTreeTableView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="600.0" showRoot="false" HBox.hgrow="ALWAYS">
+               <columns>
+                  <TreeTableColumn fx:id="keyTTC" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Key" />
+                  <TreeTableColumn fx:id="valueTTC" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Value" />
+                  <TreeTableColumn fx:id="typeTTC" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Type" />
+               </columns>
+               <columnResizePolicy>
+                  <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TreeTableView>
             </children>
         </HBox>
     </children>

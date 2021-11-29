@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.VBox?>
 <VBox fx:id="databaseView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
       xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="gui.DatabaseViewController">
+      fx:controller="gui.controllers.DatabaseViewController">
     <children>
         <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
             <children>

@@ -1,10 +1,10 @@
-package mongodb.tree_node;
+package gui.tree_node;
 
-import gui.MainGUIController;
+import gui.controllers.MainGUIController;
 import javafx.scene.control.TreeItem;
 
-public class DBNode extends TreeNode {
-    public DBNode(String name, TreeItem<TreeNode> container) {
+public class DBNode extends SimpleTreeNode {
+    public DBNode(String name, TreeItem<? extends TreeNode> container) {
         super(name, container);
     }
 
