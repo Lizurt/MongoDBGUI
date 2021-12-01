@@ -6,11 +6,11 @@
 
 <AnchorPane fx:id="collectionView" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.CollectionViewController">
    <children>
-      <TreeTableView fx:id="collectionTreeTableView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="600.0" showRoot="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TreeTableView fx:id="collectionTreeTableView" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="600.0" showRoot="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <columns>
-            <TreeTableColumn fx:id="keyTTC" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Key" />
-            <TreeTableColumn fx:id="valueTTC" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Value" />
-            <TreeTableColumn fx:id="typeTTC" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Type" />
+            <TreeTableColumn fx:id="keyTTC" maxWidth="1.7976931348623157E308" minWidth="100.0" onEditCommit="#onKeyEditFinished" prefWidth="-1.0" text="Key" />
+            <TreeTableColumn fx:id="valueTTC" maxWidth="1.7976931348623157E308" minWidth="100.0" onEditCommit="#onValueEditFinished" prefWidth="-1.0" text="Value" />
+            <TreeTableColumn fx:id="typeTTC" maxWidth="1.7976931348623157E308" minWidth="100.0" onEditCommit="#onTypeEditFinished" prefWidth="-1.0" text="Type" />
          </columns>
          <columnResizePolicy>
             <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

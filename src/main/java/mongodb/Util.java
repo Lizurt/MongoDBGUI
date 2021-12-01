@@ -8,6 +8,7 @@ import java.util.List;
 
 public abstract class Util {
     public static final String MONGO_ID_KEY = "_id";
+    public static final String MONGO_SET_COMMAND = "$set";
     public static final List<Class<?>> MONGO_DATA_TYPES = new ArrayList<>();
     public static final List<String> MONGO_DATA_TYPES_STRINGED = new ArrayList<>();
 
