@@ -17,6 +17,7 @@ public class Main extends Application {
         Parent root = loader.load(getClass().getResourceAsStream(fxmlFile));
         stage.setTitle("MongoDBGUI");
         stage.setScene(new Scene(root));
+        stage.setMaximized(true);
         stage.show();
     }
 }

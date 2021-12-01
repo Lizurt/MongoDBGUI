@@ -1,14 +1,17 @@
 package gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import mongodb.Connection;
 import gui.tree_node.CollectionNode;
 import gui.tree_node.DBNode;
 import gui.tree_node.SimpleTreeNode;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.input.MouseEvent;
+import mongodb.Connection;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -22,9 +25,6 @@ public class MainGUIController implements Initializable {
 
     @FXML
     private MenuItem miConnect;
-
-    @FXML
-    private TextField tfInput;
 
     @FXML
     private TextArea taOutput;
@@ -68,11 +68,6 @@ public class MainGUIController implements Initializable {
                 dbTreeItem.getChildren().add(new TreeItem<>(new CollectionNode(dbCollectionName, dbTreeItem)));
             }
         }
-    }
-
-    @FXML
-    private void initialize() {
-
     }
 
     @FXML

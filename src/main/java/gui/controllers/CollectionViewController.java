@@ -3,11 +3,15 @@ package gui.controllers;
 import com.mongodb.client.MongoCollection;
 import gui.tree_node.FieldNode;
 import gui.tree_node.TreeNode;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
+import javafx.scene.control.cell.ChoiceBoxListCell;
+import javafx.scene.control.cell.ChoiceBoxTreeTableCell;
+import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.layout.AnchorPane;
 import mongodb.Connection;
 import mongodb.Util;
@@ -38,7 +42,6 @@ public class CollectionViewController implements Initializable {
 
         // clear the tree from old values, if any
         collectionTreeTableRoot.getChildren().clear();
-
         // and then add new items
         MongoCollection<Document> dbCollection =
                 Connection
@@ -46,32 +49,28 @@ public class CollectionViewController implements Initializable {
                         .getMongoClient()
                         .getDatabase(collectionNode.getContainer().getValue().toString())
                         .getCollection(collectionNode.getName());
-        TreeItem<TreeNode> lastTreeItem;
+
         for (Document dbRow : dbCollection.find()) {
-            collectionTreeTableRoot.getChildren().add(
-                    new TreeItem<>(
-                            new FieldNode(
-                                    collectionTreeTableRoot,
-                                    dbRow.getObjectId(Util.MONGO_ID_KEY).toString(),
-                                    "{ " + dbRow.values().size() + " field(s) }",
-                                    dbRow.getClass().getSimpleName()
-                            )
+            TreeItem<TreeNode> lastTreeItemDocument = new TreeItem<>(
+                    new FieldNode(
+                            collectionTreeTableRoot,
+                            dbRow.getObjectId(Util.MONGO_ID_KEY).toString(),
+                            "{ " + dbRow.values().size() + " field(s) }",
+                            dbRow.getClass().getSimpleName()
                     )
             );
+            collectionTreeTableRoot.getChildren().add(lastTreeItemDocument);
             for (Map.Entry<String, Object> dbCell : dbRow.entrySet()) {
-                lastTreeItem = collectionTreeTableRoot.getChildren().get(
-                        collectionTreeTableRoot.getChildren().size() - 1
-                );
-                lastTreeItem.getChildren().add(
-                        new TreeItem<>(
-                                new FieldNode(
-                                        lastTreeItem,
-                                        dbCell.getKey(),
-                                        dbCell.getValue().toString(),
-                                        dbCell.getValue().getClass().getSimpleName()
-                                )
+                TreeItem<TreeNode> lastTreeItemField = new TreeItem<>(
+                        new FieldNode(
+                                lastTreeItemDocument,
+                                dbCell.getKey(),
+                                dbCell.getValue().toString(),
+                                dbCell.getValue().getClass().getSimpleName()
                         )
                 );
+                lastTreeItemDocument.getChildren().add(lastTreeItemField);
+
             }
         }
     }
@@ -87,8 +86,24 @@ public class CollectionViewController implements Initializable {
                 new FieldNode(null, "", "", "")
         );
         collectionTreeTableView.setRoot(collectionTreeTableRoot);
-        keyTTC.setCellValueFactory(fieldNodeStringCellDataFeatures -> fieldNodeStringCellDataFeatures.getValue().getValue().getSspKey());
-        valueTTC.setCellValueFactory(fieldNodeStringCellDataFeatures -> fieldNodeStringCellDataFeatures.getValue().getValue().getSspValue());
-        typeTTC.setCellValueFactory(fieldNodeStringCellDataFeatures -> fieldNodeStringCellDataFeatures.getValue().getValue().getSspType());
+
+        keyTTC.setCellValueFactory(
+                fieldNodeStringCellDataFeatures -> fieldNodeStringCellDataFeatures.getValue().getValue().getSspKey()
+        );
+        valueTTC.setCellValueFactory(
+                fieldNodeStringCellDataFeatures -> fieldNodeStringCellDataFeatures.getValue().getValue().getSspValue()
+        );
+        typeTTC.setCellValueFactory(
+                fieldNodeStringCellDataFeatures -> fieldNodeStringCellDataFeatures.getValue().getValue().getSspType()
+        );
+
+        keyTTC.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
+        valueTTC.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
+        typeTTC.setCellFactory(
+                ChoiceBoxTreeTableCell.forTreeTableColumn(
+                        FXCollections.observableArrayList(Util.MONGO_DATA_TYPES_STRINGED)
+                )
+        );
+        collectionTreeTableView.setEditable(true);
     }
 }
