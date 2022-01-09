@@ -11,6 +11,14 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: com.kodedu.terminalfx:terminalfx:1.0.8" level="project" />
+    <orderEntry type="library" name="Maven: com.kodedu.pty4j:pty4j:0.7.4" level="project" />
+    <orderEntry type="library" name="Maven: net.java.dev.jna:jna:4.1.0" level="project" />
+    <orderEntry type="library" name="Maven: net.java.dev.jna:jna-platform:4.1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.sparetimelabs:purejavacomm:0.0.17" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.8.4" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.8.4" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.8.4" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:13" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:win:13" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:13" level="project" />

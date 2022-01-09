@@ -49,10 +49,13 @@
               </left>
               <center>
                   <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="600.0" BorderPane.alignment="CENTER">
-                      <fx:include fx:id="collectionView" source="/fxml/collection_view.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                      <fx:include fx:id="databaseView" source="/fxml/database_view.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                      <fx:include fx:id="collectionView" source="collection_view.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                      <fx:include fx:id="databaseView" source="database_view.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                   </AnchorPane>
               </center>
+              <bottom>
+                  <fx:include fx:id="bottomControlView" source="bottom_control_view.fxml" />
+              </bottom>
           </BorderPane>
    </children>
 </AnchorPane>

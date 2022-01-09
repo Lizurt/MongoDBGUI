@@ -18,27 +18,18 @@ import java.util.ResourceBundle;
 
 public class MainGUIController implements Initializable {
     @FXML
-    private ResourceBundle resources;
-
-    @FXML
-    private URL location;
-
-    @FXML
     private MenuItem miConnect;
-
-    @FXML
-    private TextArea taOutput;
 
     @FXML
     private TreeView<SimpleTreeNode> mongoTreeView;
     private TreeItem<SimpleTreeNode> mongoTreeRoot;
 
     // todo: make these fields private. At the moment I'm not sure if there is no a better approach
+    // todo: make these fields lists, since it would be useful to have an ability to work with multiple dbs
     @FXML
     public CollectionViewController collectionViewController;
     @FXML
     public DatabaseViewController databaseViewController;
-
 
     @FXML
     private void onExitButtonPressed(ActionEvent event) {

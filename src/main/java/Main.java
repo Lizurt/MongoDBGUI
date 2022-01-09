@@ -12,9 +12,11 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        String fxmlFile = "/fxml/main.fxml";
-        FXMLLoader loader = new FXMLLoader();
-        Parent root = loader.load(getClass().getResourceAsStream(fxmlFile));
+        String fxmlFileName = "/fxml/main.fxml";
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource(fxmlFileName));
+        System.out.println(fxmlLoader.getLocation());
+        Parent root = fxmlLoader.load();
         stage.setTitle("MongoDBGUI");
         stage.setScene(new Scene(root));
         stage.setMaximized(true);
