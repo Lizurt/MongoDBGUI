@@ -23,11 +23,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.kodedu.terminalfx</groupId>
-            <artifactId>terminalfx</artifactId>
-            <version>1.0.8</version>
-        </dependency>
-        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>13</version>
@@ -41,6 +36,16 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
             <version>4.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fxmisc.richtext</groupId>
+            <artifactId>richtextfx</artifactId>
+            <version>0.10.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kodedu.terminalfx</groupId>
+            <artifactId>terminalfx</artifactId>
+            <version>1.0.8</version>
         </dependency>
     </dependencies>
 

@@ -3,6 +3,7 @@ package gui.controllers;
 import gui.tree_node.CollectionNode;
 import gui.tree_node.DBNode;
 import gui.tree_node.SimpleTreeNode;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -38,27 +39,34 @@ public class MainGUIController implements Initializable {
 
     @FXML
     private void onConnectButtonPressed(ActionEvent event) {
-        Connection.getInstance().connect("mongodb://127.0.0.1:27017");
-
-        if (!Connection.getInstance().readyToWork()) {
+        if (Connection.getInstance().readyToWork()) {
+            // todo: forbid pressing this button at all in this case
             return;
         }
 
-        for (String dbName : Connection.getInstance().getMongoClient().listDatabaseNames()) {
-            mongoTreeRoot.getChildren().add(new TreeItem<>(new DBNode(dbName, mongoTreeRoot)));
-        }
+        Platform.runLater(() -> {
+            Connection.getInstance().connect("mongodb://127.0.0.1:27017");
 
-        for (TreeItem<SimpleTreeNode> dbTreeItem : mongoTreeRoot.getChildren()) {
-            for (
-                    String dbCollectionName :
-                    Connection.getInstance()
-                            .getMongoClient()
-                            .getDatabase(dbTreeItem.getValue().getName())
-                            .listCollectionNames()
-            ) {
-                dbTreeItem.getChildren().add(new TreeItem<>(new CollectionNode(dbCollectionName, dbTreeItem)));
+            if (!Connection.getInstance().readyToWork()) {
+                return;
             }
-        }
+
+            for (String dbName : Connection.getInstance().getMongoClient().listDatabaseNames()) {
+                mongoTreeRoot.getChildren().add(new TreeItem<>(new DBNode(dbName, mongoTreeRoot)));
+            }
+
+            for (TreeItem<SimpleTreeNode> dbTreeItem : mongoTreeRoot.getChildren()) {
+                for (
+                        String dbCollectionName :
+                        Connection.getInstance()
+                                .getMongoClient()
+                                .getDatabase(dbTreeItem.getValue().getName())
+                                .listCollectionNames()
+                ) {
+                    dbTreeItem.getChildren().add(new TreeItem<>(new CollectionNode(dbCollectionName, dbTreeItem)));
+                }
+            }
+        });
     }
 
     @FXML

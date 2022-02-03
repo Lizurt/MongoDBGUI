@@ -27,6 +27,8 @@ import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import static com.mongodb.client.model.Filters.*;
+
 public class CollectionViewController implements Initializable {
     @FXML
     private AnchorPane collectionView;
@@ -57,7 +59,7 @@ public class CollectionViewController implements Initializable {
         );
         currentCollection = currentDatabase.getCollection(collectionNode.getName());
 
-        for (Document dbRow : currentCollection.find()) {
+        for (Document dbRow : currentCollection.find(eq("status", "D"))) {
             DocumentFieldNode dbKeyDocumentFieldNode = new DocumentFieldNode(
                     collectionTreeTableRoot,
                     dbRow.getObjectId(Util.MONGO_ID_KEY).toString(),
