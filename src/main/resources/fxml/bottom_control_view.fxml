@@ -1,39 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
-<?import org.fxmisc.richtext.CodeArea?>
-<?import gui.panes.AdvancedCodeArea?>
+<?import com.kodedu.terminalfx.Terminal?>
 <AnchorPane fx:id="bottomControlView" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.BottomControlViewController">
-   <children>
-      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <children>
-            <VBox alignment="TOP_CENTER">
-               <children>
-                  <Button fx:id="buttonRun" mnemonicParsing="false" onAction="#onButtonRunPressed" prefHeight="50.0" prefWidth="50.0" text="Run" />
-               </children>
-            </VBox>
-            <SplitPane dividerPositions="0.29797979797979796" prefHeight="160.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-              <items>
-                <AnchorPane minHeight="0.0" minWidth="50.0" prefHeight="160.0" prefWidth="100.0">
-                     <children>
-                         <AdvancedCodeArea fx:id="acaInput" prefHeight="200.0" prefWidth="200.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-                  </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="50.0" prefHeight="160.0" prefWidth="100.0">
-                     <children>
-                         <AdvancedCodeArea fx:id="acaOutput" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-                  </AnchorPane>
-              </items>
-            </SplitPane>
-         </children>
-      </HBox>
-   </children>
+    <children>
+        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox alignment="TOP_CENTER">
+                    <children>
+                        <Button fx:id="buttonRun" mnemonicParsing="false" onAction="#onButtonRunPressed" prefHeight="50.0" prefWidth="50.0" text="Run" />
+                    </children>
+                </VBox>
+                <AnchorPane minHeight="0.0" minWidth="50.0" prefHeight="400.0" prefWidth="550.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <gui.panes.ShelledTerminal fx:id="terminal" maxHeight="Infinity" maxWidth="Infinity" prefHeight="200.0" prefWidth="200.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    </children>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+                </AnchorPane>
+            </children>
+        </HBox>
+    </children>
 </AnchorPane>

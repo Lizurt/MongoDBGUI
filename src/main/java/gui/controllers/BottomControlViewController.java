@@ -1,6 +1,7 @@
 package gui.controllers;
 
-import gui.panes.AdvancedCodeArea;
+import custom_input.InputHandler;
+import gui.panes.ShelledTerminal;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,10 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import mongodb.ShelledConnection;
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.ResourceBundle;
 
 public class BottomControlViewController implements Initializable {
@@ -23,42 +21,26 @@ public class BottomControlViewController implements Initializable {
     @FXML
     private Button buttonRun;
 
-    @FXML
-    private AdvancedCodeArea acaInput;
+    private InputHandler inputHandler;
 
     @FXML
-    private AdvancedCodeArea acaOutput;
+    private ShelledTerminal terminal;
 
     private ShelledConnection shelledConnection;
 
     @FXML
     void onButtonRunPressed(ActionEvent event) {
-       Platform.runLater(() -> {
-            acaOutput.appendText(acaInput.getText());
-            acaOutput.appendText("\n");
-            String output = "Something went wrong!";
-            try {
-                output = shelledConnection.doQuery(acaInput.getText());
-            } catch (IOException e) {
-                // todo: warning for a user
-                e.printStackTrace();
-            }
-            acaOutput.appendText("< ");
-            acaOutput.appendText(output);
-        });
-    }
-
-    private void prepareForInput() {
-        acaOutput.appendText("> ");
+        //Platform.runLater(() -> shelledConnection.doQuery(terminal.getText()));
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeInputArea();
-        initializeOutputArea();
+        initializeTerminal();
     }
 
     private void initializeInputArea() {
+        /* fixme: intellisense, syntax highlighting etc
         acaInput.setOnKeyTyped(keyEvent -> {
             if (keyEvent.getCharacter().equals("\"")) {
                 int currCaretPos = acaInput.getCaretPosition();
@@ -66,8 +48,7 @@ public class BottomControlViewController implements Initializable {
                 acaInput.setStyle(
                         acaInput.getCaretColumn() - 2,
                         acaInput.getCaretColumn(),
-                        // fixme: its not fucking working
-                        // todo: dont forget to remove this fixme tag ^ before committing
+                        // fixme: its not flipping working i already spent 2 hours on making quotes green AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                         Collections.singleton("quotes")
                 );
 
@@ -76,19 +57,37 @@ public class BottomControlViewController implements Initializable {
 
                 acaInput.displaceCaret(currCaretPos);
             }
-        });
+        });*/
     }
 
-    private void initializeOutputArea() {
-        try {
-            shelledConnection = ShelledConnection.createDefault(
-                    // todo: add this to configs
-                    "C:\\Program Files\\MongoDB\\Server\\5.0\\bin\\mongo.exe"
-            );
-            prepareForInput();
-        } catch (IOException e) {
-            // todo: warning for a user
-            e.printStackTrace();
-        }
+    private void initializeTerminal() {
+        shelledConnection = new ShelledConnection(
+                // todo: add this to configs
+                "C:\\Program Files\\MongoDB\\Server\\5.0\\bin\\mongo.exe"
+        );
+
+        inputHandler = new InputHandler(terminal, shelledConnection);
+        terminal.setOnKeyPressed(inputHandler::handleInput);
+
+        new Thread(() -> {
+            shelledConnection.blockThreadUntilReadiness();
+            try {
+                int nRead;
+                final char[] buffer = new char[1024];
+
+                // stderr is already in stdout so no need to read it somewhere else too
+                while ((nRead = shelledConnection.getStdout().read(buffer, 0, buffer.length)) != -1) {
+                    // we don't wanna make race conditions. This string builder is a good way to prevent it
+                    final StringBuilder builder = new StringBuilder(nRead);
+                    builder.append(buffer, 0, nRead);
+                    Platform.runLater(() -> {
+                        terminal.appendText(builder.toString());
+                        terminal.onOutputFinished();
+                    });
+                }
+            } catch(final Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }
