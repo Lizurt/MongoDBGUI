@@ -59,7 +59,7 @@ public class CollectionViewController implements Initializable {
         );
         currentCollection = currentDatabase.getCollection(collectionNode.getName());
 
-        for (Document dbRow : currentCollection.find(eq("status", "D"))) {
+        for (Document dbRow : currentCollection.find()) {
             DocumentFieldNode dbKeyDocumentFieldNode = new DocumentFieldNode(
                     collectionTreeTableRoot,
                     dbRow.getObjectId(Util.MONGO_ID_KEY).toString(),
