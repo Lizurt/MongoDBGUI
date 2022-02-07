@@ -1,36 +1,29 @@
 package gui.controllers;
 
+import javafx.scene.control.ScrollPane;
 import custom_input.TerminalIOHandler;
-import gui.panes.ShelledTerminal;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import mongodb.ShelledConnection;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class BottomControlViewController implements Initializable {
+    @FXML
+    private VBox vBoxIOList;
 
     @FXML
     private AnchorPane bottomControlView;
 
     @FXML
-    private Button buttonRun;
+    private ScrollPane scrollPane;
 
     private TerminalIOHandler terminalIOHandler;
 
-    @FXML
-    private ShelledTerminal terminal;
-
     private ShelledConnection shelledConnection;
-
-    @FXML
-    void onButtonRunPressed(ActionEvent event) {
-        //Platform.runLater(() -> shelledConnection.doQuery(terminal.getText()));
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -65,9 +58,7 @@ public class BottomControlViewController implements Initializable {
                 "C:\\Program Files\\MongoDB\\Server\\5.0\\bin\\mongo.exe"
         );
 
-        terminalIOHandler = new TerminalIOHandler(terminal, shelledConnection);
-        terminal.setOnKeyPressed(terminalIOHandler::handleInput);
-
+        terminalIOHandler = new TerminalIOHandler(scrollPane, vBoxIOList, shelledConnection);
         new Thread(terminalIOHandler::startStreamReader).start();
     }
 }

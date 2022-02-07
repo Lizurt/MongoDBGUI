@@ -1,41 +1,75 @@
 package custom_input;
 
-import gui.panes.ShelledTerminal;
+import gui.panes.AdvancedCodeArea;
+import gui.panes.HBoxIOSection;
+import javafx.scene.control.ScrollPane;
 import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 import mongodb.ShelledConnection;
 
 public class TerminalIOHandler {
-    private ShelledTerminal shelledTerminal;
+    private VBox vBoxIOList;
     private ShelledConnection shelledConnection;
     private long lastTimeBusyWithOutputting = -1;
     private boolean isBusyWithOutputting = false;
     // time need to pass since last output from stdout to append text
     private int timeBetweenCheckingOutput = 500;
+    private AdvancedCodeArea lastFreshOutputSection;
+    private AdvancedCodeArea lastFreshInputSection;
+    private ScrollPane scrollPane;
 
-    public TerminalIOHandler(ShelledTerminal shelledTerminal, ShelledConnection shelledConnection) {
-        this.shelledTerminal = shelledTerminal;
+    public TerminalIOHandler(ScrollPane scrollPane, VBox vBoxIOList, ShelledConnection shelledConnection) {
+        this.vBoxIOList = vBoxIOList;
         this.shelledConnection = shelledConnection;
+        this.scrollPane = scrollPane;
+        prepareForOutput();
     }
 
     public void handleInput(KeyEvent keyEvent) {
+        if (lastFreshInputSection != keyEvent.getSource()) {
+            // we could just remove this handler but meh...
+            return;
+        }
+
         if (keyEvent.getCode() == KeyCode.ENTER) {
             // don't worry mrs text area we'll handle the enter key ourselves
             keyEvent.consume();
-            shelledTerminal.onCommandWritingFinished();
             // and that's why we can't let a text area append enters by itself - they'll be appended
             // after the method below will be executed. And i don't wanna risk with threads, yes
-            sendCommandToShell();
-            return;
+            finishInput();
         }
     }
 
-    private void sendCommandToShell() {
+    private void startInput() {
+        if (((HBoxIOSection) vBoxIOList.getChildren().get(vBoxIOList.getChildren().size() - 1)).isInputSection()) {
+            return;
+        }
+
+        HBoxIOSection newInputSection = new HBoxIOSection(true);
+        newInputSection.getAdvancedCodeArea().setOnKeyPressed(this::handleInput);
+        lastFreshInputSection = newInputSection.getAdvancedCodeArea();
+
+        vBoxIOList.getParent().onScrollProperty().bind(lastFreshInputSection.onScrollProperty());
+        vBoxIOList.getChildren().add(newInputSection);
+        newInputSection.getAdvancedCodeArea().requestFocus();
+        scrollPane.setVvalue(1.0);
+    }
+
+    private void finishInput() {
+        lastFreshInputSection.setEditable(false);
+        prepareForOutput();
         // using concatenation for making sure that nothing will be written between 2 input commands.
         // Yes we can use synchronized tag for input method but i'm not sure it's worth it
-        shelledConnection.input(shelledTerminal.getNewCommand() + "\r\n");
-        shelledTerminal.onInputFinished();
+        shelledConnection.input(lastFreshInputSection.getText() + "\r\n");
+    }
+
+    private void prepareForOutput() {
+        HBoxIOSection newOutputSection = new HBoxIOSection(false);
+        lastFreshOutputSection = newOutputSection.getAdvancedCodeArea();
+        vBoxIOList.getParent().onScrollProperty().bind(lastFreshOutputSection.onScrollProperty());
+        vBoxIOList.getChildren().add(newOutputSection);
     }
 
     public void startStreamReader() {
@@ -69,11 +103,11 @@ public class TerminalIOHandler {
                         // seems output is finished, so probably it's finally safe to let a user to input
                         isBusyWithOutputting = false;
                         Platform.runLater(() -> {
-                            shelledTerminal.appendText(stringBuilderWrapper.builder.toString());
+                            lastFreshOutputSection.appendText(stringBuilderWrapper.builder.toString());
+                            startInput();
                             synchronized (stringBuilderWrapper) {
                                 stringBuilderWrapper.builder = new StringBuilder();
                             }
-                            shelledTerminal.onOutputFinished();
                         });
                     }).start();
                 }
