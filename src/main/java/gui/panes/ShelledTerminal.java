@@ -1,34 +1,42 @@
 package gui.panes;
 
-import com.kodedu.terminalfx.Terminal;
 import org.fxmisc.richtext.CodeArea;
 
 public class ShelledTerminal extends CodeArea {
-    private int newCommandStart;
+    private int currentCommandStart;
     // make sure nobody'll try to get a command that's still being written.
-    // Punching with an exception is an effective way to make it
-    private int newCommandEnd = -1;
+    // Punching with an exception is an effective way to do it
+    private int currentCommandEnd = -1;
+
+    private String inputMark = "> ";
+    private String outputMark = "< ";
 
     public String getNewCommand() {
-
-        return getText(newCommandStart, newCommandEnd);
+        return getText(currentCommandStart, currentCommandEnd);
     }
 
     public void onCommandWritingFinished() {
-        newCommandEnd = getLength() - 1;
+        if (currentCommandEnd >= 0) {
+            // firstly need to call onOutputFinished() and then write new commands.
+            // We'll repeat an old command if needed
+            return;
+        }
+        currentCommandEnd = getLength() - 1;
     }
 
     public void onOutputFinished() {
-        // hey bro, nice crutch, awesome bugs.
-        // fixme: a very very temp "soltuion" just to test and finally commit this awful version of terminal emulator
-        onCommandSentToShell();
+        appendText(inputMark);
+        resetCurrentCommandPosition();
+        setEditable(true);
     }
 
-    public void onCommandSentToShell() {
-        // sent and ready for a new command, so reset newCommandStart
-        newCommandStart = getLength();
-        // make sure nobody'll try to get a command that's still being written.
-        // Punching with an exception is an effective way to make it
-        newCommandEnd = -1;
+    public void onInputFinished() {
+        setEditable(false);
+        appendText(outputMark);
+    }
+
+    private void resetCurrentCommandPosition() {
+        currentCommandStart = getLength();
+        currentCommandEnd = -1;
     }
 }

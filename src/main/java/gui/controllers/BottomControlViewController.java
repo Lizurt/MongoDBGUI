@@ -1,8 +1,7 @@
 package gui.controllers;
 
-import custom_input.InputHandler;
+import custom_input.TerminalIOHandler;
 import gui.panes.ShelledTerminal;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,7 +20,7 @@ public class BottomControlViewController implements Initializable {
     @FXML
     private Button buttonRun;
 
-    private InputHandler inputHandler;
+    private TerminalIOHandler terminalIOHandler;
 
     @FXML
     private ShelledTerminal terminal;
@@ -66,28 +65,9 @@ public class BottomControlViewController implements Initializable {
                 "C:\\Program Files\\MongoDB\\Server\\5.0\\bin\\mongo.exe"
         );
 
-        inputHandler = new InputHandler(terminal, shelledConnection);
-        terminal.setOnKeyPressed(inputHandler::handleInput);
+        terminalIOHandler = new TerminalIOHandler(terminal, shelledConnection);
+        terminal.setOnKeyPressed(terminalIOHandler::handleInput);
 
-        new Thread(() -> {
-            shelledConnection.blockThreadUntilReadiness();
-            try {
-                int nRead;
-                final char[] buffer = new char[1024];
-
-                // stderr is already in stdout so no need to read it somewhere else too
-                while ((nRead = shelledConnection.getStdout().read(buffer, 0, buffer.length)) != -1) {
-                    // we don't wanna make race conditions. This string builder is a good way to prevent it
-                    final StringBuilder builder = new StringBuilder(nRead);
-                    builder.append(buffer, 0, nRead);
-                    Platform.runLater(() -> {
-                        terminal.appendText(builder.toString());
-                        terminal.onOutputFinished();
-                    });
-                }
-            } catch(final Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        new Thread(terminalIOHandler::startStreamReader).start();
     }
 }
