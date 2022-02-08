@@ -58,7 +58,9 @@ public class BottomControlViewController implements Initializable {
                 "C:\\Program Files\\MongoDB\\Server\\5.0\\bin\\mongo.exe"
         );
 
-        terminalIOHandler = new TerminalIOHandler(scrollPane, vBoxIOList, shelledConnection);
+        terminalIOHandler = new TerminalIOHandler(vBoxIOList, shelledConnection);
+        // auto scrolling down
+        vBoxIOList.heightProperty().addListener(observable -> scrollPane.setVvalue(1.0));
         new Thread(terminalIOHandler::startStreamReader).start();
     }
 }

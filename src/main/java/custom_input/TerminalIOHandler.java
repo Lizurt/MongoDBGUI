@@ -2,7 +2,6 @@ package custom_input;
 
 import gui.panes.AdvancedCodeArea;
 import gui.panes.HBoxIOSection;
-import javafx.scene.control.ScrollPane;
 import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -18,12 +17,10 @@ public class TerminalIOHandler {
     private int timeBetweenCheckingOutput = 500;
     private AdvancedCodeArea lastFreshOutputSection;
     private AdvancedCodeArea lastFreshInputSection;
-    private ScrollPane scrollPane;
 
-    public TerminalIOHandler(ScrollPane scrollPane, VBox vBoxIOList, ShelledConnection shelledConnection) {
+    public TerminalIOHandler(VBox vBoxIOList, ShelledConnection shelledConnection) {
         this.vBoxIOList = vBoxIOList;
         this.shelledConnection = shelledConnection;
-        this.scrollPane = scrollPane;
         prepareForOutput();
     }
 
@@ -54,7 +51,6 @@ public class TerminalIOHandler {
         vBoxIOList.getParent().onScrollProperty().bind(lastFreshInputSection.onScrollProperty());
         vBoxIOList.getChildren().add(newInputSection);
         newInputSection.getAdvancedCodeArea().requestFocus();
-        scrollPane.setVvalue(1.0);
     }
 
     private void finishInput() {
