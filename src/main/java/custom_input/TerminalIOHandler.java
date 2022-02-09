@@ -24,17 +24,13 @@ public class TerminalIOHandler {
         prepareForOutput();
     }
 
-    public void handleInput(KeyEvent keyEvent) {
+    public void handlePressed(KeyEvent keyEvent) {
         if (lastFreshInputSection != keyEvent.getSource()) {
             // we could just remove this handler but meh...
             return;
         }
 
         if (keyEvent.getCode() == KeyCode.ENTER) {
-            // don't worry mrs text area we'll handle the enter key ourselves
-            keyEvent.consume();
-            // and that's why we can't let a text area append enters by itself - they'll be appended
-            // after the method below will be executed. And i don't wanna risk with threads, yes
             finishInput();
         }
     }
@@ -45,7 +41,7 @@ public class TerminalIOHandler {
         }
 
         HBoxIOSection newInputSection = new HBoxIOSection(true);
-        newInputSection.getAdvancedCodeArea().setOnKeyPressed(this::handleInput);
+        newInputSection.getAdvancedCodeArea().addEventHandler(KeyEvent.KEY_PRESSED, this::handlePressed);
         lastFreshInputSection = newInputSection.getAdvancedCodeArea();
 
         vBoxIOList.getParent().onScrollProperty().bind(lastFreshInputSection.onScrollProperty());

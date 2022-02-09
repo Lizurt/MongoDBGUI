@@ -20,6 +20,7 @@ public class Main extends Application {
         Parent root = fxmlLoader.load();
         stage.setTitle("MongoDBGUI");
         Scene scene = new Scene(root);
+        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.setOnCloseRequest(windowEvent -> System.exit(0));
