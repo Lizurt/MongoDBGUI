@@ -3,6 +3,7 @@ package gui.panes;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -47,6 +48,14 @@ public class HBoxIOSection extends HBox {
         if (!isInputSection) {
             advancedCodeArea.setEditable(false);
         }
+
+        advancedCodeArea.addEventFilter(ScrollEvent.ANY, scrollEvent -> {
+            // Refiring events is a bad practice, but still the only solution I see
+            // we already made code area auto extensible, so why do we need even to scroll it? Let outer pane scroll
+            getParent().fireEvent(scrollEvent);
+            // yeah and block code area's scrolling
+            scrollEvent.consume();
+        });
 
         getChildren().addAll(labelIOMark, advancedCodeArea);
         setHgrow(advancedCodeArea, Priority.ALWAYS);

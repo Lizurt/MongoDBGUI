@@ -33,7 +33,7 @@ public class BottomControlViewController implements Initializable {
     private void initializeTerminal() {
         shelledConnection = new ShelledConnection(
                 // todo: add this to configs
-                "C:\\Program Files\\MongoDB\\Server\\5.0\\bin\\mongo.exe"
+                "G:\\Programs\\mongodb503\\bin\\mongo.exe"
         );
 
         terminalIOHandler = new TerminalIOHandler(vBoxIOList, shelledConnection);
