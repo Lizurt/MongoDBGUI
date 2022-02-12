@@ -12,11 +12,15 @@ public class TerminalIOHandler {
     private VBox vBoxIOList;
     private ShelledConnection shelledConnection;
     private long lastTimeBusyWithOutputting = -1;
-    private boolean isBusyWithOutputting = false;
     // time need to pass since last output from stdout to append text
     private int timeBetweenCheckingOutput = 500;
     private AdvancedCodeArea lastFreshOutputSection;
     private AdvancedCodeArea lastFreshInputSection;
+
+    // we don't wanna create race conditions. This string builder is a good way to prevent it.
+    // We use wrapper because of threads
+    private final StringBuilderWrapper stringBuilderWrapper = new StringBuilderWrapper(new StringBuilder());
+    private Thread waitingForOutputToFinishThread;
 
     public TerminalIOHandler(VBox vBoxIOList, ShelledConnection shelledConnection) {
         this.vBoxIOList = vBoxIOList;
@@ -62,6 +66,7 @@ public class TerminalIOHandler {
         lastFreshOutputSection = newOutputSection.getAdvancedCodeArea();
         vBoxIOList.getParent().onScrollProperty().bind(lastFreshOutputSection.onScrollProperty());
         vBoxIOList.getChildren().add(newOutputSection);
+        startWaitingOutputFinishedThread();
     }
 
     public void startStreamReader() {
@@ -69,46 +74,52 @@ public class TerminalIOHandler {
         try {
             int amtOfCharsToReadFromBuffer;
             final char[] buffer = new char[1024];
-            // we don't wanna create race conditions. This string builder is a good way to prevent it.
-            // We use wrapper because of threads
-            var stringBuilderWrapper = new Object() {
-                StringBuilder builder = new StringBuilder();
-            };
 
             // stderr is already in stdout so no need to read it somewhere else too
             while (
                     (amtOfCharsToReadFromBuffer = shelledConnection.getStdout().read(buffer, 0, buffer.length)) >= 0
             ) {
                 lastTimeBusyWithOutputting = System.currentTimeMillis();
-                if (!isBusyWithOutputting) {
-                    isBusyWithOutputting = true;
-                    new Thread(() -> {
-                        // while at least N ms haven't passed since last time we got output...
-                        while (System.currentTimeMillis() - lastTimeBusyWithOutputting < timeBetweenCheckingOutput) {
-                            // ...we're sleeping and waiting the output to finish
-                            try {
-                                Thread.sleep(timeBetweenCheckingOutput);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        // seems output is finished, so probably it's finally safe to let a user to input
-                        isBusyWithOutputting = false;
-                        Platform.runLater(() -> {
-                            lastFreshOutputSection.appendText(stringBuilderWrapper.builder.toString());
-                            startInput();
-                            synchronized (stringBuilderWrapper) {
-                                stringBuilderWrapper.builder = new StringBuilder();
-                            }
-                        });
-                    }).start();
+                if (!waitingForOutputToFinishThread.isAlive()) {
+                    // oops we were outputting one command too long and our thread is dead. Have to start a new one
+                    startWaitingOutputFinishedThread();
                 }
                 synchronized (stringBuilderWrapper) {
-                    stringBuilderWrapper.builder.append(buffer, 0, amtOfCharsToReadFromBuffer);
+                    stringBuilderWrapper.getStringBuilder().append(buffer, 0, amtOfCharsToReadFromBuffer);
                 }
             }
         } catch(final Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void startWaitingOutputFinishedThread() {
+        if (waitingForOutputToFinishThread != null && waitingForOutputToFinishThread.isAlive()) {
+            // it's already started we don't need a new one
+            return;
+        }
+
+        waitingForOutputToFinishThread = new Thread(() -> {
+            // making sure we'll wait at least N ms before allowing input
+            lastTimeBusyWithOutputting = System.currentTimeMillis();
+            // while at least N ms haven't passed since last time we got output...
+            while (System.currentTimeMillis() - lastTimeBusyWithOutputting < timeBetweenCheckingOutput) {
+                // ...we're sleeping and waiting the output to finish
+                try {
+                    Thread.sleep(timeBetweenCheckingOutput);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            // seems output is finished, so probably it's finally safe to let a user to input
+            Platform.runLater(() -> {
+                lastFreshOutputSection.appendText(stringBuilderWrapper.getStringBuilder().toString());
+                startInput();
+                synchronized (stringBuilderWrapper) {
+                    stringBuilderWrapper.setStringBuilder(new StringBuilder());
+                }
+            });
+        });
+        waitingForOutputToFinishThread.start();
     }
 }
