@@ -16,8 +16,8 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AdvancedCodeArea extends CodeArea {
-    private static final String[] KEYWORDS = new String[]{
+public class TerminalInputArea extends CodeArea {
+    public static final String[] KEYWORDS = new String[]{
             // todo: more keywords
             "aggregate",
             "count",
@@ -59,6 +59,7 @@ public class AdvancedCodeArea extends CodeArea {
         getVisibleParagraphs().addModificationObserver(
                 new VisibleParagraphStyler<>(this, this::computeHighlighting)
         );
+        /*
         final Pattern whiteSpace = Pattern.compile("^\\s+");
 
         addEventHandler(KeyEvent.KEY_PRESSED, keyEvent ->
@@ -69,7 +70,9 @@ public class AdvancedCodeArea extends CodeArea {
                 Matcher m0 = whiteSpace.matcher(getParagraph(currentParagraph - 1).getSegments().get(0));
                 if (m0.find()) Platform.runLater(() -> insertText(caretPosition, m0.group()));
             }
+
         });
+        */
 
         addEventHandler(KeyEvent.KEY_TYPED, keyEvent -> {
             if (PAIRED_CHARS.containsKey(keyEvent.getCharacter())) {
@@ -115,7 +118,10 @@ public class AdvancedCodeArea extends CodeArea {
         @Override
         public void accept(ListModification<? extends Paragraph<PS, SEG, S>> lm) {
             if (lm.getAddedSize() > 0) {
-                int paragraph = Math.min(area.firstVisibleParToAllParIndex() + lm.getFrom(), area.getParagraphs().size() - 1);
+                int paragraph = Math.min(
+                        area.firstVisibleParToAllParIndex() + lm.getFrom(),
+                        area.getParagraphs().size() - 1
+                );
                 String text = area.getText(paragraph, 0, paragraph, area.getParagraphLength(paragraph));
 
                 if (paragraph != prevParagraph || text.length() != prevTextLength) {

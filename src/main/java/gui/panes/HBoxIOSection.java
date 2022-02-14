@@ -1,18 +1,15 @@
 package gui.panes;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 public class HBoxIOSection extends HBox {
     private boolean isInputSection;
     private Label labelIOMark;
-    private AdvancedCodeArea advancedCodeArea;
+    private TerminalInputArea terminalInputArea;
 
     // some crutches for vertical auto expanding
     private Text textHolderCrutch = new Text();
@@ -29,27 +26,27 @@ public class HBoxIOSection extends HBox {
         labelIOMark = new Label(ioMark);
         labelIOMark.setStyle(ioMarkStyle);
 
-        advancedCodeArea = new AdvancedCodeArea();
-        advancedCodeArea.setStyle(acaStyle);
-        advancedCodeArea.setPrefHeight(0);
-        advancedCodeArea.setWrapText(true);
+        terminalInputArea = new TerminalInputArea();
+        terminalInputArea.setStyle(acaStyle);
+        terminalInputArea.setPrefHeight(0);
+        terminalInputArea.setWrapText(true);
 
-        textHolderCrutch.textProperty().bind(advancedCodeArea.textProperty());
+        textHolderCrutch.textProperty().bind(terminalInputArea.textProperty());
         textHolderCrutch.layoutBoundsProperty().addListener((observableValue, oldValue, newValue) -> {
             if (oldHeight != newValue.getHeight()) {
-                advancedCodeArea.setPrefHeight(textHolderCrutch.getLayoutBounds().getHeight());
-                advancedCodeArea.setMinHeight(textHolderCrutch.getLayoutBounds().getHeight());
-                advancedCodeArea.setMaxHeight(textHolderCrutch.getLayoutBounds().getHeight());
+                terminalInputArea.setPrefHeight(textHolderCrutch.getLayoutBounds().getHeight());
+                terminalInputArea.setMinHeight(textHolderCrutch.getLayoutBounds().getHeight());
+                terminalInputArea.setMaxHeight(textHolderCrutch.getLayoutBounds().getHeight());
                 oldHeight = newValue.getHeight();
-                textHolderCrutch.setWrappingWidth(advancedCodeArea.getWidth() - 10);
+                textHolderCrutch.setWrappingWidth(terminalInputArea.getWidth() - 10);
             }
         });
 
         if (!isInputSection) {
-            advancedCodeArea.setEditable(false);
+            terminalInputArea.setEditable(false);
         }
 
-        advancedCodeArea.addEventFilter(ScrollEvent.ANY, scrollEvent -> {
+        terminalInputArea.addEventFilter(ScrollEvent.ANY, scrollEvent -> {
             // Refiring events is a bad practice, but still the only solution I see
             // we already made code area auto extensible, so why do we need even to scroll it? Let outer pane scroll
             getParent().fireEvent(scrollEvent);
@@ -57,8 +54,8 @@ public class HBoxIOSection extends HBox {
             scrollEvent.consume();
         });
 
-        getChildren().addAll(labelIOMark, advancedCodeArea);
-        setHgrow(advancedCodeArea, Priority.ALWAYS);
+        getChildren().addAll(labelIOMark, terminalInputArea);
+        setHgrow(terminalInputArea, Priority.ALWAYS);
     }
 
     public HBoxIOSection(boolean isInputSection, String ioMark) {
@@ -77,7 +74,7 @@ public class HBoxIOSection extends HBox {
         return labelIOMark;
     }
 
-    public AdvancedCodeArea getAdvancedCodeArea() {
-        return advancedCodeArea;
+    public TerminalInputArea getTerminalInputArea() {
+        return terminalInputArea;
     }
 }
