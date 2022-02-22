@@ -1,44 +1,73 @@
 package gui.controllers;
 
-import javafx.scene.control.ScrollPane;
-import custom_input.TerminalIOHandler;
+import gui.panes.AdvancedCodeArea;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import mongodb.ShelledConnection;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class BottomControlViewController implements Initializable {
     @FXML
-    private VBox vBoxIOList;
-
-    @FXML
     private AnchorPane bottomControlView;
 
     @FXML
-    private ScrollPane scrollPane;
-
-    private TerminalIOHandler terminalIOHandler;
-
-    private ShelledConnection shelledConnection;
+    private TabPane tabPane;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        initializeTerminal();
+        // todo: ability to add new tabs
+        addNewTab();
     }
 
-    private void initializeTerminal() {
-        shelledConnection = new ShelledConnection(
-                // todo: add this to configs
-                "G:\\Programs\\mongodb503\\bin\\mongo.exe"
-        );
+    public void addNewTab() {
+        Tab tab = new Tab("main");
 
-        terminalIOHandler = new TerminalIOHandler(vBoxIOList, shelledConnection);
-        // auto scrolling down
-        vBoxIOList.heightProperty().addListener(observable -> scrollPane.setVvalue(1.0));
-        new Thread(terminalIOHandler::startStreamReader).start();
+        AnchorPane anchorPane = new AnchorPane();
+        tab.setContent(anchorPane);
+
+        HBox hBox = new HBox();
+        VBox vBox = new VBox();
+        SplitPane splitPane = new SplitPane();
+        hBox.getChildren().addAll(vBox, splitPane);
+
+        Button buttonRun = new Button("Run");
+        buttonRun.setPrefWidth(50);
+        buttonRun.setMinWidth(50);
+        buttonRun.setMaxWidth(50);
+        buttonRun.setPrefHeight(50);
+        buttonRun.setMinHeight(50);
+        buttonRun.setMaxHeight(50);
+        buttonRun.setOnAction(event -> {
+            // String res = smhInput.exec(query);
+            // acaOutput.setText(res);
+        });
+        vBox.getChildren().add(buttonRun);
+
+        AdvancedCodeArea acaInput = new AdvancedCodeArea();
+        AdvancedCodeArea acaOutput = new AdvancedCodeArea();
+        acaInput.initAutocomplete();
+        acaOutput.setEditable(false);
+        splitPane.getItems().addAll(acaInput, acaOutput);
+
+        HBox.setHgrow(splitPane, Priority.ALWAYS);
+
+        anchorPane.getChildren().add(hBox);
+        AnchorPane.setTopAnchor(hBox, 0d);
+        AnchorPane.setRightAnchor(hBox, 0d);
+        AnchorPane.setBottomAnchor(hBox, 0d);
+        AnchorPane.setLeftAnchor(hBox, 0d);
+
+        tabPane.getTabs().add(tab);
     }
 }
