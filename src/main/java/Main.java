@@ -16,7 +16,6 @@ public class Main extends Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource(fxmlFileName));
-        System.out.println(fxmlLoader.getLocation());
         Parent root = fxmlLoader.load();
         stage.setTitle("MongoDBGUI");
         Scene scene = new Scene(root);

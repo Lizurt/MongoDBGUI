@@ -1,8 +1,7 @@
 package gui.controllers;
 
+import custom_input.Parser;
 import gui.panes.AdvancedCodeArea;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -41,6 +40,12 @@ public class BottomControlViewController implements Initializable {
         SplitPane splitPane = new SplitPane();
         hBox.getChildren().addAll(vBox, splitPane);
 
+        AdvancedCodeArea acaInput = new AdvancedCodeArea();
+        AdvancedCodeArea acaOutput = new AdvancedCodeArea();
+        acaInput.initAutocomplete();
+        acaOutput.setEditable(false);
+        splitPane.getItems().addAll(acaInput, acaOutput);
+
         Button buttonRun = new Button("Run");
         buttonRun.setPrefWidth(50);
         buttonRun.setMinWidth(50);
@@ -49,16 +54,11 @@ public class BottomControlViewController implements Initializable {
         buttonRun.setMinHeight(50);
         buttonRun.setMaxHeight(50);
         buttonRun.setOnAction(event -> {
-            // String res = smhInput.exec(query);
-            // acaOutput.setText(res);
+            acaOutput.clear();
+            String result = Parser.parseCommand(acaInput.getText());
+            acaOutput.appendText(result);
         });
         vBox.getChildren().add(buttonRun);
-
-        AdvancedCodeArea acaInput = new AdvancedCodeArea();
-        AdvancedCodeArea acaOutput = new AdvancedCodeArea();
-        acaInput.initAutocomplete();
-        acaOutput.setEditable(false);
-        splitPane.getItems().addAll(acaInput, acaOutput);
 
         HBox.setHgrow(splitPane, Priority.ALWAYS);
 

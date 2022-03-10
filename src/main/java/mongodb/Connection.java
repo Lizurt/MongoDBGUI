@@ -15,11 +15,12 @@ public class Connection {
         return ConnectionInstanceHolder.INSTANCE;
     }
 
-    public boolean readyToWork() {
+    public boolean isReadyToWork() {
         return mongoClient != null;
     }
 
     private MongoClient mongoClient;
+    private String currentDatabaseName;
 
     public void connect(String fullIp) {
         if (mongoClient != null) {
@@ -40,5 +41,13 @@ public class Connection {
 
     public MongoClient getMongoClient() {
         return mongoClient;
+    }
+
+    public String getCurrentDatabaseName() {
+        return currentDatabaseName;
+    }
+
+    public void setCurrentDatabase(String currentDatabase) {
+        this.currentDatabaseName = currentDatabase;
     }
 }

@@ -8,7 +8,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
@@ -39,7 +38,7 @@ public class MainGUIController implements Initializable {
 
     @FXML
     private void onConnectButtonPressed(ActionEvent event) {
-        if (Connection.getInstance().readyToWork()) {
+        if (Connection.getInstance().isReadyToWork()) {
             // todo: forbid pressing this button at all in this case
             return;
         }
@@ -47,7 +46,7 @@ public class MainGUIController implements Initializable {
         Platform.runLater(() -> {
             Connection.getInstance().connect("mongodb://127.0.0.1:27017");
 
-            if (!Connection.getInstance().readyToWork()) {
+            if (!Connection.getInstance().isReadyToWork()) {
                 return;
             }
 
