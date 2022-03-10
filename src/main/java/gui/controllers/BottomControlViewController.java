@@ -12,6 +12,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import mongodb.Connection;
+import org.bson.conversions.Bson;
 
 import java.net.URL;
 import java.util.ResourceBundle;
