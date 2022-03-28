@@ -54,8 +54,10 @@ public class BottomControlViewController implements Initializable {
         buttonRun.setMinHeight(50);
         buttonRun.setMaxHeight(50);
         buttonRun.setOnAction(event -> {
+            Parser parser = new Parser();
+            parser.setRawCommand(acaInput.getText() + "\r\n");
             acaOutput.clear();
-            String result = Parser.parseCommand(acaInput.getText());
+            String result = parser.parseCommand();
             acaOutput.appendText(result);
         });
         vBox.getChildren().add(buttonRun);

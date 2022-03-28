@@ -5,13 +5,8 @@ import java.util.List;
 
 public class MDBParameters {
     private List<Object> parameters = new ArrayList<>();
-    private int currParamIndex;
-    private int step;
-
-    public MDBParameters() {
-        setStep(1);
-        setCurrParamIndex(0);
-    }
+    private int currParamIndex = 0;
+    private int step = 1;
 
     public Object useAndGetParameter() {
         Object result = parameters.get(currParamIndex);

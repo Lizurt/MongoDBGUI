@@ -1,5 +1,6 @@
 package custominput.mdb.commands;
 
+import custominput.mdb.Delimiter;
 import custominput.mdb.parameters.MDBParametersPattern;
 import custominput.mdb.parameters.MDBParameters;
 
@@ -17,28 +18,22 @@ public abstract class MDBCommandPattern implements Function<MDBParameters, Objec
     private MDBParametersPattern parameters;
     public static final String COMMAND_AS_PARAMETER = "";
 
-    private char childCommandsAccessDelimiter;
-    public static final char IGNORED_CHILD_COMMANDS_ACCESS_DELIMITER = '\0';
+    private Delimiter childCommandsAccessDelimiter;
     private List<MDBCommandPattern> childCommands = new ArrayList<>();
+
+    // caching to decrease the search complexity
+    private MDBCommandPattern childCommandAsParameter;
 
     public MDBCommandPattern(
             Class<?> returnValueClass,
             String commandRaw,
             MDBParametersPattern parameters,
-            char childCommandsAccessDelimiter
+            Delimiter childCommandsAccessDelimiter
     ) {
         setReturnValueClass(returnValueClass);
         setCommandRaw(commandRaw);
         setParameters(parameters);
         setChildCommandsAccessDelimiter(childCommandsAccessDelimiter);
-    }
-
-    public void addAvailableChildCommand(MDBCommandPattern childCmd) {
-        if (childCmd.getParent() != null) {
-            throw new IllegalArgumentException(MDBCommandPattern.class.getSimpleName()
-                    + " cannot have more than one parent.");
-        }
-        childCmd.setParent(this);
     }
 
     public MDBCommandPattern getParent() {
@@ -57,7 +52,7 @@ public abstract class MDBCommandPattern implements Function<MDBParameters, Objec
         return parameters;
     }
 
-    public char getChildCommandsAccessDelimiter() {
+    public Delimiter getChildCommandsAccessDelimiter() {
         return childCommandsAccessDelimiter;
     }
 
@@ -65,7 +60,7 @@ public abstract class MDBCommandPattern implements Function<MDBParameters, Objec
         return childCommands;
     }
 
-    private void setParent(MDBCommandPattern parent) {
+    public void setParent(MDBCommandPattern parent) {
         if (getParent() != null) {
             getParent().getChildCommands().removeIf(siblingCmd -> siblingCmd == this);
         }
@@ -73,7 +68,15 @@ public abstract class MDBCommandPattern implements Function<MDBParameters, Objec
         if (parent == null) {
             return;
         }
-        parent.addAvailableChildCommand(this);
+        if (getCommandRaw().equals(COMMAND_AS_PARAMETER)) {
+            if (getChildCommandAsParameter() != null) {
+                throw new IllegalArgumentException(MDBCommandPattern.class.getSimpleName()
+                        + " cannot have more than one command-as-parameter child."
+                );
+            }
+            parent.setChildCommandAsParameter(this);
+        }
+        parent.getChildCommands().add(this);
     }
 
     private void setReturnValueClass(Class<?> returnValueClass) {
@@ -88,11 +91,19 @@ public abstract class MDBCommandPattern implements Function<MDBParameters, Objec
         this.parameters = parameters;
     }
 
-    private void setChildCommandsAccessDelimiter(char childCommandsAccessDelimiter) {
+    private void setChildCommandsAccessDelimiter(Delimiter childCommandsAccessDelimiter) {
         this.childCommandsAccessDelimiter = childCommandsAccessDelimiter;
     }
 
     private void setChildCommands(List<MDBCommandPattern> childCommands) {
         this.childCommands = childCommands;
+    }
+
+    public MDBCommandPattern getChildCommandAsParameter() {
+        return childCommandAsParameter;
+    }
+
+    private void setChildCommandAsParameter(MDBCommandPattern childCommandAsParameter) {
+        this.childCommandAsParameter = childCommandAsParameter;
     }
 }

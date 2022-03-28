@@ -20,7 +20,7 @@ public class Connection {
     }
 
     private MongoClient mongoClient;
-    private String currentDatabaseName;
+    private String currentDatabaseName = "test";
 
     public void connect(String fullIp) {
         if (mongoClient != null) {
