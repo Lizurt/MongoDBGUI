@@ -1,8 +1,12 @@
-package custom_input;
+package custominput.mdb.commands;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import custominput.mdb.parameters.MDBParameterPattern;
+import custominput.mdb.parameters.MDBParametersPattern;
+import custominput.mdb.parameters.ParameterSearchPlace;
+import custominput.mdb.parameters.MDBParameters;
 import mongodb.Connection;
 import org.bson.Document;
 import org.bson.conversions.Bson;

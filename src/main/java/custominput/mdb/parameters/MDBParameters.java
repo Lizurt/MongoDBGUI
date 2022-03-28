@@ -1,4 +1,4 @@
-package custom_input;
+package custominput.mdb.parameters;
 
 import java.util.ArrayList;
 import java.util.List;

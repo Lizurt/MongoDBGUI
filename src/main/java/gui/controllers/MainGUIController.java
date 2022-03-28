@@ -1,8 +1,8 @@
 package gui.controllers;
 
-import gui.tree_node.CollectionNode;
-import gui.tree_node.DBNode;
-import gui.tree_node.SimpleTreeNode;
+import gui.treenode.CollectionNode;
+import gui.treenode.DBNode;
+import gui.treenode.SimpleTreeNode;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

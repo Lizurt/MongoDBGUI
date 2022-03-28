@@ -1,4 +1,6 @@
-package custom_input;
+package custominput;
+
+import custominput.mdb.parameters.MDBParameterPattern;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

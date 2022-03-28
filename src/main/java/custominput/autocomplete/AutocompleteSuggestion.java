@@ -1,4 +1,4 @@
-package custom_input;
+package custominput.autocomplete;
 
 public class AutocompleteSuggestion {
     private String fullSuggestion = "";

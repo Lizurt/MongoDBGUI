@@ -1,4 +1,4 @@
-package gui.tree_node;
+package gui.treenode;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TreeItem;

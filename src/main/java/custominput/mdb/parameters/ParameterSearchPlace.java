@@ -1,4 +1,4 @@
-package custom_input;
+package custominput.mdb.parameters;
 
 public enum ParameterSearchPlace {
     NOWHERE,

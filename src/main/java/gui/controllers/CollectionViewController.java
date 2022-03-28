@@ -1,11 +1,9 @@
 package gui.controllers;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import gui.tree_node.DocumentFieldNode;
-import gui.tree_node.TreeNode;
+import gui.treenode.DocumentFieldNode;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,17 +15,13 @@ import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.layout.AnchorPane;
 import mongodb.Connection;
 import mongodb.Util;
-import gui.tree_node.CollectionNode;
+import gui.treenode.CollectionNode;
 import org.bson.Document;
-import org.bson.json.JsonReader;
 import org.bson.types.ObjectId;
 
-import javax.print.Doc;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
-
-import static com.mongodb.client.model.Filters.*;
 
 public class CollectionViewController implements Initializable {
     @FXML

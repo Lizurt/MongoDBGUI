@@ -1,6 +1,6 @@
 package gui.panes;
 
-import custom_input.AutocompleteSuggestion;
+import custominput.autocomplete.AutocompleteSuggestion;
 import org.fxmisc.richtext.InlineCssTextField;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
