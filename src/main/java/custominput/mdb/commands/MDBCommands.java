@@ -32,10 +32,10 @@ public abstract class MDBCommands {
                 ChildDelimiter.IGNORED_DELIMITER
         ) {
             @Override
-            public Object apply(MDBParameters params) {
+            public MDBCommandResult apply(MDBParameters params) {
                 Object dbName = params.useAndGetParameter();
                 Connection.getInstance().setCurrentDatabase(dbName.toString());
-                return "switched to " + dbName.toString();
+                return new MDBCommandResult(null, "switched to " + dbName.toString());
             }
         };
         AVAILABLE_MDB_COMMANDS.add(parentMDBC);
@@ -47,10 +47,11 @@ public abstract class MDBCommands {
                 ChildDelimiter.DOT
         ) {
             @Override
-            public Object apply(MDBParameters params) {
-                return Connection.getInstance().getMongoClient().getDatabase(
+            public MDBCommandResult apply(MDBParameters params) {
+                MongoDatabase mongoDatabase = Connection.getInstance().getMongoClient().getDatabase(
                         Connection.getInstance().getCurrentDatabaseName()
                 );
+                return new MDBCommandResult(mongoDatabase, Connection.getInstance().getCurrentDatabaseName());
             }
         };
         AVAILABLE_MDB_COMMANDS.add(parentMDBC);
@@ -67,10 +68,13 @@ public abstract class MDBCommands {
                 ChildDelimiter.DOT
         ) {
             @Override
-            public Object apply(MDBParameters params) {
+            public MDBCommandResult apply(MDBParameters params) {
                 Object collectionName = params.useAndGetParameter();
-                MongoDatabase mongoDatabase = (MongoDatabase) getParent().apply(null);
-                return mongoDatabase.getCollection(collectionName.toString());
+                MongoDatabase mongoDatabase = (MongoDatabase) getParent().apply(params).getResult();
+                return new MDBCommandResult(
+                        mongoDatabase.getCollection(collectionName.toString()),
+                        collectionName.toString()
+                );
             }
         };
         AVAILABLE_MDB_COMMANDS.add(childMDBC);
@@ -91,10 +95,10 @@ public abstract class MDBCommands {
                 ChildDelimiter.DOT
         ) {
             @Override
-            public Object apply(MDBParameters params) {
+            public MDBCommandResult apply(MDBParameters params) {
                 Object query = params.useAndGetParameter();
                 Object projection = params.useAndGetParameter();
-                MongoCollection<Document> collection = (MongoCollection<Document>) getParent().apply(params);
+                MongoCollection<Document> collection = (MongoCollection<Document>) getParent().apply(params).getResult();
                 FindIterable<Document> findIterable;
                 if (query == null) {
                     findIterable = collection.find();
@@ -104,7 +108,11 @@ public abstract class MDBCommands {
                 if (projection != null) {
                     findIterable = findIterable.projection((Bson) projection);
                 }
-                return findIterable;
+                StringBuilder humanReadableResult = new StringBuilder();
+                for (Document document : findIterable) {
+                    humanReadableResult.append(document.toJson()).append("\r\n");
+                }
+                return new MDBCommandResult(findIterable, humanReadableResult.toString());
             }
         };
         AVAILABLE_MDB_COMMANDS.add(childMDBC);

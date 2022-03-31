@@ -78,7 +78,7 @@ public class Parser {
         }
         mdbParameters.setStep(-1);
         mdbParameters.setCurrParamIndex(mdbParameters.getParameters().size() - 1);
-        return currCommand.apply(mdbParameters).toString();
+        return currCommand.apply(mdbParameters).getHumanReadableResult();
     }
 
     private String tryParseParams() {

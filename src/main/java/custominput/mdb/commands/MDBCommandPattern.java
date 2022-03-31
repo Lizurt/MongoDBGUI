@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class MDBCommandPattern implements Function<MDBParameters, Object> {
+public abstract class MDBCommandPattern implements Function<MDBParameters, MDBCommandResult> {
     private MDBCommandPattern parent;
 
     private Class<?> returnValueClass;
