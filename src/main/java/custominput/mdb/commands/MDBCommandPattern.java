@@ -1,6 +1,6 @@
 package custominput.mdb.commands;
 
-import custominput.mdb.Delimiter;
+import custominput.mdb.ChildDelimiter;
 import custominput.mdb.parameters.MDBParametersPattern;
 import custominput.mdb.parameters.MDBParameters;
 
@@ -18,7 +18,7 @@ public abstract class MDBCommandPattern implements Function<MDBParameters, Objec
     private MDBParametersPattern parameters;
     public static final String COMMAND_AS_PARAMETER = "";
 
-    private Delimiter childCommandsAccessDelimiter;
+    private ChildDelimiter childCommandsAccessDelimiter;
     private List<MDBCommandPattern> childCommands = new ArrayList<>();
 
     // caching to decrease the search complexity
@@ -28,12 +28,16 @@ public abstract class MDBCommandPattern implements Function<MDBParameters, Objec
             Class<?> returnValueClass,
             String commandRaw,
             MDBParametersPattern parameters,
-            Delimiter childCommandsAccessDelimiter
+            ChildDelimiter childCommandsAccessDelimiter
     ) {
         setReturnValueClass(returnValueClass);
         setCommandRaw(commandRaw);
         setParameters(parameters);
         setChildCommandsAccessDelimiter(childCommandsAccessDelimiter);
+
+        if (parameters.getStartStopDelimiter().SHOULD_START_WITH == childCommandsAccessDelimiter.DELIMITER) {
+            throw new IllegalArgumentException("Params and child delimiters clash.");
+        }
     }
 
     public MDBCommandPattern getParent() {
@@ -52,7 +56,7 @@ public abstract class MDBCommandPattern implements Function<MDBParameters, Objec
         return parameters;
     }
 
-    public Delimiter getChildCommandsAccessDelimiter() {
+    public ChildDelimiter getChildCommandsAccessDelimiter() {
         return childCommandsAccessDelimiter;
     }
 
@@ -91,7 +95,7 @@ public abstract class MDBCommandPattern implements Function<MDBParameters, Objec
         this.parameters = parameters;
     }
 
-    private void setChildCommandsAccessDelimiter(Delimiter childCommandsAccessDelimiter) {
+    private void setChildCommandsAccessDelimiter(ChildDelimiter childCommandsAccessDelimiter) {
         this.childCommandsAccessDelimiter = childCommandsAccessDelimiter;
     }
 

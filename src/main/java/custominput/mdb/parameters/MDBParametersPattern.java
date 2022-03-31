@@ -1,25 +1,29 @@
 package custominput.mdb.parameters;
 
-import custominput.mdb.Delimiter;
+import custominput.mdb.ChildDelimiter;
 
 public class MDBParametersPattern {
     private MDBParameterPattern[] parameters;
     private ParameterSearchPlace parameterSearchPlace;
-    private Delimiter delimiter;
+    private ParameterScanStartStopDelimiter startStopDelimiter;
+    private ParameterDelimiter parameterDelimiter;
 
     public static final MDBParametersPattern NO_PARAMS = new MDBParametersPattern(
             ParameterSearchPlace.NOWHERE,
-            Delimiter.IGNORED_DELIMITER
+            ParameterScanStartStopDelimiter.NOTHING,
+            ParameterDelimiter.NOTHING
     );
 
     public MDBParametersPattern(
             ParameterSearchPlace parameterSearchPlace,
-            Delimiter delimiter,
+            ParameterScanStartStopDelimiter startStopDelimiter,
+            ParameterDelimiter parameterDelimiter,
             MDBParameterPattern... parameters
     ) {
         setParameterSearchPlace(parameterSearchPlace);
+        setStartStopDelimiter(startStopDelimiter);
+        setParameterDelimiter(parameterDelimiter);
         setParameters(parameters);
-        setDelimiter(delimiter);
 
         boolean nonOptionalParamsEnded = false;
         for (MDBParameterPattern mdbParameterPattern : getParameters()) {
@@ -49,11 +53,19 @@ public class MDBParametersPattern {
         this.parameterSearchPlace = parameterSearchPlace;
     }
 
-    public Delimiter getDelimiter() {
-        return delimiter;
+    public ParameterDelimiter getParameterDelimiter() {
+        return parameterDelimiter;
     }
 
-    private void setDelimiter(Delimiter delimiter) {
-        this.delimiter = delimiter;
+    public void setParameterDelimiter(ParameterDelimiter parameterDelimiter) {
+        this.parameterDelimiter = parameterDelimiter;
+    }
+
+    public ParameterScanStartStopDelimiter getStartStopDelimiter() {
+        return startStopDelimiter;
+    }
+
+    public void setStartStopDelimiter(ParameterScanStartStopDelimiter startStopDelimiter) {
+        this.startStopDelimiter = startStopDelimiter;
     }
 }

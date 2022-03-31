@@ -1,11 +1,12 @@
 package custominput;
 
 import com.google.gson.Gson;
-import custominput.mdb.Delimiter;
+import custominput.mdb.ChildDelimiter;
 import custominput.mdb.commands.MDBCommandPattern;
 import custominput.mdb.commands.MDBCommands;
 import custominput.mdb.parameters.MDBParameters;
 import custominput.mdb.parameters.MDBParametersPattern;
+import custominput.mdb.parameters.ParameterScanStartStopDelimiter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -13,19 +14,21 @@ import java.util.List;
 
 public class Parser {
     private String rawCommand;
-    private int currPos;
+    private int currPos = 0;
     private Gson gson = new Gson();
+
+    int wordStartPos = currPos;
+    String lastRawCommand = null;
+    String currRawCommand = null;
+    MDBCommandPattern lastCommand = null;
+    MDBCommandPattern currCommand = null;
+    boolean currCharIsWordStart = true;
+    ChildDelimiter usedChildDelimiter = null;
+    ParameterScanStartStopDelimiter usedParameterScanStartDelimiter = null;
+    MDBParameters mdbParameters = new MDBParameters();
 
     public String parseCommand() {
         consumeWhitespaces();
-        int wordStartPos = currPos;
-        String lastWord = null;
-        String currWord = null;
-        MDBCommandPattern lastKeyword = null;
-        MDBCommandPattern currKeyword = null;
-        boolean currCharIsWordStart = true;
-        Delimiter usedDelimiter = null;
-        MDBParameters mdbParameters = new MDBParameters();
         while (currPos < rawCommand.length()) {
             if (Character.isJavaIdentifierPart(rawCommand.charAt(currPos))) {
                 if (currCharIsWordStart && !Character.isJavaIdentifierStart(rawCommand.charAt(currPos))) {
@@ -35,107 +38,148 @@ public class Parser {
                 currPos++;
                 continue;
             }
-            lastWord = currWord;
-            lastKeyword = currKeyword;
-            currWord = rawCommand.substring(wordStartPos, currPos);
+            lastRawCommand = currRawCommand;
+            lastCommand = currCommand;
+            currRawCommand = rawCommand.substring(wordStartPos, currPos);
             // are we processing a first word in a raw command?
-            if (lastKeyword == null) {
+            if (lastCommand == null) {
                 // yes so have to check every available command
                 // todo: optimisation: cache commands-roots
                 for (MDBCommandPattern mdbCommandPattern : MDBCommands.AVAILABLE_MDB_COMMANDS) {
-                    if (currWord.equals(mdbCommandPattern.getCommandRaw())) {
-                        currKeyword = mdbCommandPattern;
+                    if (currRawCommand.equals(mdbCommandPattern.getCommandRaw())) {
+                        currCommand = mdbCommandPattern;
                         break;
                     }
                 }
             } else {
-                // no, not a first word, but what if we used a wrong delimiter? So we assume we typed a parameter
-                if (lastKeyword.getChildCommandsAccessDelimiter() != usedDelimiter) {
-                    // does a previous keyword even have params?
-                    if (lastKeyword.getParameters() == MDBParametersPattern.NO_PARAMS) {
-                        return lastWord + " cannot have parameters. Met parameter: " + currWord + ".";
-                    }
-                    // have a user typed a wrong delimiter even for params?
-                    if (usedDelimiter == null
-                            || lastKeyword.getParameters().getParameterSearchPlace().parametersShouldStartWith
-                            != usedDelimiter.delimiterChar
-                    ) {
-                        return lastWord + "'s parameters list should start with \""
-                                + lastKeyword.getParameters().getParameterSearchPlace().parametersShouldStartWith + "\"";
-                    }
-                    // aight, we have params and they start with a correct delimiter.
-                    // Let parseParams() handle our currPos
-                    currPos -= currWord.length();
-                    String status = parseParams(lastKeyword.getParameters(), mdbParameters);
-                    if (!status.isEmpty()) {
-                        return status;
-                    }
-                    continue;
-                }
                 // ok we used a correct delimiter and trying to find a matching child command
-                boolean foundMatchingChild = false;
-                for (MDBCommandPattern mdbCommandPattern : lastKeyword.getChildCommands()) {
-                    if (currWord.equals(mdbCommandPattern.getCommandRaw())) {
-                        currKeyword = mdbCommandPattern;
-                        foundMatchingChild = true;
-                        break;
-                    }
-                }
-                if (!foundMatchingChild) {
-                    if (lastKeyword.getChildCommandAsParameter() == null) {
-                        return "Couldn't find such child identifier or function for: " + currWord + ".";
-                    }
-                    currKeyword = lastKeyword.getChildCommandAsParameter();
-                    mdbParameters.addParameter(currWord);
+                String status = tryParseCurrRawCommandAsChild();
+                if (!status.isEmpty()) {
+                    return status;
                 }
             }
-            shortenWhitespaces();
-            usedDelimiter = Delimiter.getByChar(rawCommand.charAt(currPos));
+            if (currCommand == null) {
+                return "Couldn't find such identifier: \"" + currRawCommand + "\".";
+            }
+            String status = tryParseParams();
+            if (!status.isEmpty()) {
+                return status;
+            }
+            // params may end the program, so we gotta check it
+            if (currPos >= rawCommand.length()) {
+                break;
+            }
+            usedChildDelimiter = ChildDelimiter.getByChar(rawCommand.charAt(currPos));
             currPos++;
             wordStartPos = currPos;
         }
-        if (currKeyword == null) {
+        if (currCommand == null) {
             return "Couldn't parse such command.";
         }
-        return currKeyword.apply(mdbParameters).toString();
+        mdbParameters.setStep(-1);
+        mdbParameters.setCurrParamIndex(mdbParameters.getParameters().size() - 1);
+        return currCommand.apply(mdbParameters).toString();
     }
 
-    private void consumeWhitespaces() {
+    private String tryParseParams() {
+        int shortenedWhitespaces = shortenWhitespaces();
+        int consumedWhitespaces = 0;
+        // We allow to use spaces before brackets, and at the same time we allow use spaces as parameters
+        // scan start characters, so we gotta check if we can eat possible spaces
+        if (currCommand.getParameters().getStartStopDelimiter() != ParameterScanStartStopDelimiter.SPACE) {
+            consumeWhitespaces();
+        }
+
+        usedParameterScanStartDelimiter = ParameterScanStartStopDelimiter.getByStartChar(
+                rawCommand.charAt(currPos)
+        );
+        if (usedParameterScanStartDelimiter == null) {
+            // alright, seems we aren't trying to pass params to a command
+            return "";
+        }
+        // have a user typed a wrong delimiter for params?
+        if (
+                currCommand.getParameters().getStartStopDelimiter().SHOULD_START_WITH
+                        != usedParameterScanStartDelimiter.SHOULD_START_WITH
+        ) {
+            return "Wrong parameter access delimiter: \"" + rawCommand.charAt(currPos) + "\"." +
+                    "Expected: \"" + currCommand.getParameters().getStartStopDelimiter().SHOULD_START_WITH
+                    + "\".";
+        }
+        // aight, we have params and they start with a correct delimiter. Let's consume the start delimiter
+        currPos++;
+        String status = parseParams(currCommand.getParameters(), mdbParameters);
+        if (!status.isEmpty()) {
+            return status;
+        }
+        // and we should consume the end delimiter
+        currPos++;
+        return "";
+    }
+
+    private String tryParseCurrRawCommandAsChild() {
+        boolean foundMatchingChild = false;
+        for (MDBCommandPattern mdbCommandPattern : lastCommand.getChildCommands()) {
+            if (currRawCommand.equals(mdbCommandPattern.getCommandRaw())) {
+                currCommand = mdbCommandPattern;
+                foundMatchingChild = true;
+                break;
+            }
+        }
+        if (!foundMatchingChild) {
+            if (lastCommand.getChildCommandAsParameter() == null) {
+                return "Couldn't find such child identifier or function for: " + currRawCommand + ".";
+            }
+            currCommand = lastCommand.getChildCommandAsParameter();
+            mdbParameters.addParameter(currRawCommand);
+        }
+        return "";
+    }
+
+
+    private int consumeWhitespaces() {
+        int consumed = 0;
         while (currPos < rawCommand.length() && Character.isWhitespace(rawCommand.charAt(currPos))) {
+            consumed++;
             currPos++;
         }
+        return consumed;
     }
 
     /**
      * Guarantees that a next character in a raw program won't be whitespace, skips any whitespace before it.
      */
-    private void shortenWhitespaces() {
+    private int shortenWhitespaces() {
+        int shortened = 0;
         boolean foundAtLeastOneWhitespace = false;
         while (currPos < rawCommand.length() && Character.isWhitespace(rawCommand.charAt(currPos))) {
+            shortened++;
             currPos++;
             foundAtLeastOneWhitespace = true;
         }
         if (foundAtLeastOneWhitespace) {
+            shortened--;
             currPos--;
         }
+        return shortened;
     }
 
     public String parseParams(MDBParametersPattern mdbParametersPattern, MDBParameters mdbParameters) {
         List<String> rawParameters = new ArrayList<>();
-        consumeWhitespaces();
         int wordStartPos = currPos;
         boolean endedWithParamEndChar = false;
         while (currPos < rawCommand.length()) {
-            if (rawCommand.charAt(currPos) == mdbParametersPattern.getParameterSearchPlace().parametersShouldEndWith) {
-                rawParameters.add(StringUtils.trim(rawCommand.substring(wordStartPos, currPos)));
-                currPos++;
+            if (rawCommand.charAt(currPos) == mdbParametersPattern.getStartStopDelimiter().SHOULD_END_WITH) {
+                String command = StringUtils.trim(rawCommand.substring(wordStartPos, currPos));
+                if (!command.isEmpty()) {
+                    rawParameters.add(command);
+                }
                 endedWithParamEndChar = true;
                 break;
             }
-            if (rawCommand.charAt(currPos) == mdbParametersPattern.getDelimiter().delimiterChar) {
+            if (rawCommand.charAt(currPos) == mdbParametersPattern.getParameterDelimiter().DELIMITER) {
                 rawParameters.add(StringUtils.trim(rawCommand.substring(wordStartPos, currPos)));
                 wordStartPos = currPos;
-                continue;
             }
             currPos++;
         }
@@ -146,22 +190,30 @@ public class Parser {
 
         int paramPatternIndex = 0;
         for (String rawParameter : rawParameters) {
+            if (paramPatternIndex >= mdbParametersPattern.getParameters().length) {
+                return "Too many parameters for a command. Expected: \""
+                        + mdbParametersPattern.getParameters().length + "\"";
+            }
             Class<?> contentClass = mdbParametersPattern.getParameters()[paramPatternIndex].getContentClass();
             Object param = gson.fromJson(rawParameter, contentClass);
-            paramPatternIndex++;
             if (param == null) {
                 return "Wrong argument at position: " + paramPatternIndex
                         + ". Expected type: " + contentClass.getSimpleName() + ".";
             }
             mdbParameters.addParameter(param);
+            paramPatternIndex++;
         }
 
-        paramPatternIndex++;
         if (paramPatternIndex < mdbParametersPattern.getParameters().length
                 && !mdbParametersPattern.getParameters()[paramPatternIndex].isOptional()
         ) {
             Class<?> contentClass = mdbParametersPattern.getParameters()[paramPatternIndex].getContentClass();
             return "Missing required argument. Expected next argument type: " + contentClass.getSimpleName() + ".";
+        }
+
+        while (paramPatternIndex < mdbParametersPattern.getParameters().length) {
+            paramPatternIndex++;
+            mdbParameters.addParameter(null);
         }
 
         return "";

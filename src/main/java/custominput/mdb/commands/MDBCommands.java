@@ -3,11 +3,8 @@ package custominput.mdb.commands;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import custominput.mdb.Delimiter;
-import custominput.mdb.parameters.MDBParameterPattern;
-import custominput.mdb.parameters.MDBParametersPattern;
-import custominput.mdb.parameters.ParameterSearchPlace;
-import custominput.mdb.parameters.MDBParameters;
+import custominput.mdb.ChildDelimiter;
+import custominput.mdb.parameters.*;
 import mongodb.Connection;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -27,11 +24,12 @@ public abstract class MDBCommands {
                 String.class,
                 "use",
                 new MDBParametersPattern(
-                        ParameterSearchPlace.SPACED_NEXT_WORD,
-                        Delimiter.COMMA,
+                        ParameterSearchPlace.FORWARD,
+                        ParameterScanStartStopDelimiter.SPACE,
+                        ParameterDelimiter.NOTHING,
                         new MDBParameterPattern(String.class, false)
                 ),
-                Delimiter.IGNORED_DELIMITER
+                ChildDelimiter.IGNORED_DELIMITER
         ) {
             @Override
             public Object apply(MDBParameters params) {
@@ -46,7 +44,7 @@ public abstract class MDBCommands {
                 MongoDatabase.class,
                 "db",
                 MDBParametersPattern.NO_PARAMS,
-                Delimiter.DOT
+                ChildDelimiter.DOT
         ) {
             @Override
             public Object apply(MDBParameters params) {
@@ -62,10 +60,11 @@ public abstract class MDBCommands {
                 MDBCommandPattern.COMMAND_AS_PARAMETER,
                 new MDBParametersPattern(
                         ParameterSearchPlace.COMMAND_AS_PARAMETER,
-                        Delimiter.COMMA,
+                        ParameterScanStartStopDelimiter.NOTHING,
+                        ParameterDelimiter.NOTHING,
                         new MDBParameterPattern(String.class, false)
                 ),
-                Delimiter.DOT
+                ChildDelimiter.DOT
         ) {
             @Override
             public Object apply(MDBParameters params) {
@@ -83,12 +82,13 @@ public abstract class MDBCommands {
                 FindIterable.class,
                 "find",
                 new MDBParametersPattern(
-                        ParameterSearchPlace.BRACKETS_FORWARD,
-                        Delimiter.COMMA,
+                        ParameterSearchPlace.FORWARD,
+                        ParameterScanStartStopDelimiter.BRACKETS_FORWARD,
+                        ParameterDelimiter.COMMA,
                         new MDBParameterPattern(Bson.class, true),
                         new MDBParameterPattern(Bson.class, true)
                 ),
-                Delimiter.DOT
+                ChildDelimiter.DOT
         ) {
             @Override
             public Object apply(MDBParameters params) {
