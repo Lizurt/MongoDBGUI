@@ -71,10 +71,8 @@ public abstract class MDBCommands {
             public MDBCommandResult apply(MDBParameters params) {
                 Object collectionName = params.useAndGetParameter();
                 MongoDatabase mongoDatabase = (MongoDatabase) getParent().apply(params).getResult();
-                return new MDBCommandResult(
-                        mongoDatabase.getCollection(collectionName.toString()),
-                        collectionName.toString()
-                );
+                MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collectionName.toString());
+                return new MDBCommandResult(mongoCollection, mongoCollection.getNamespace().toString());
             }
         };
         AVAILABLE_MDB_COMMANDS.add(childMDBC);

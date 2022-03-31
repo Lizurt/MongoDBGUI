@@ -36,7 +36,9 @@ public class Parser {
                 }
                 currCharIsWordStart = false;
                 currPos++;
-                continue;
+                if (currPos < rawCommand.length()) {
+                    continue;
+                }
             }
             lastRawCommand = currRawCommand;
             lastCommand = currCommand;
@@ -82,6 +84,9 @@ public class Parser {
     }
 
     private String tryParseParams() {
+        if (currPos >= rawCommand.length()) {
+            return "";
+        }
         int shortenedWhitespaces = shortenWhitespaces();
         int consumedWhitespaces = 0;
         // We allow to use spaces before brackets, and at the same time we allow use spaces as parameters
